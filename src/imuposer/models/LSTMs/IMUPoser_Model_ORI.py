@@ -49,38 +49,20 @@ class IMUPoserModel(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         imu_inputs, target_pose, input_lengths, _ = batch
 
-        # print(f'\n IMUPoser_Model.py - training_step() - imu_inputs.size(): {imu_inputs.size()}, \
-        #         target_pose.size(): {target_pose.size()}, input_lengths: {input_lengths}')
-        #  imu_inputs.size(): torch.Size([256, 125, 60]),                 target_pose.size(): torch.Size([256, 125, 144])
-        
         _pred = self(imu_inputs, input_lengths)
-        # print(f'\n IMUPoser_Model.py - training_step() - _pred.size(): {_pred.size()}')
 
         pred_pose = _pred[:, :, :self.n_pose_output]
-        # print(f'\n IMUPoser_Model.py - training_step() - pred_pose.size(): {pred_pose.size()}')
-        '''
-        IMUPoser_Model.py - training_step() - _pred.size(): torch.Size([256, 125, 144])
-        IMUPoser_Model.py - training_step() - pred_pose.size(): torch.Size([256, 125, 144])
-        '''
         _target = target_pose
         target_pose = _target[:, :, :self.n_pose_output]
         loss = self.loss(pred_pose, target_pose)
         if self.config.use_joint_loss:
             pred_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(pred_pose).view(-1, 216))[1]
             target_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(target_pose).view(-1, 216))[1] ## If training is slow, get this from the dataloader
-            # print(f'\n IMUPoser_Model.py - training_step() - pred_joint.size(): {pred_joint.size()}')
-            # print(f'\n IMUPoser_Model.py - training_step() - target_joint.size(): {target_joint.size()}')
-            '''
-            IMUPoser_Model.py - training_step() - _pred.size(): torch.Size([256, 125, 144])
-            IMUPoser_Model.py - training_step() - pred_pose.size(): torch.Size([256, 125, 144])
-            IMUPoser_Model.py - training_step() - pred_joint.size(): torch.Size([32000, 24, 3])
-            IMUPoser_Model.py - training_step() - target_joint.size(): torch.Size([32000, 24, 3])
-            '''
             joint_pos_loss = self.loss(pred_joint, target_joint)
             loss += joint_pos_loss
 
         self.log(f"training_step_loss", loss.item(), batch_size=self.batch_size)
-        # www
+
         return {"loss": loss}
 
     def validation_step(self, batch, batch_idx):
