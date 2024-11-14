@@ -60,7 +60,6 @@ class Config:
     acc_scale = 30
     train_pct = 0.9
     batch_size = 64 # 256
-    test_batch_size = 2048
     torch_seed = 0
 
 # DIP order

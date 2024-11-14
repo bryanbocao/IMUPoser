@@ -26,6 +26,7 @@ class IMUPoserModel(pl.LightningModule):
         n_output = self.n_pose_output
 
         self.batch_size = config.batch_size
+        self.test_batch_size = config.test_batch_size
         
         self.dip_model = RNN(n_input=n_input, n_output=n_output, n_hidden=512, bidirectional=True)
 
@@ -76,6 +77,11 @@ class IMUPoserModel(pl.LightningModule):
             IMUPoser_Model.py - training_step() - pred_joint.size(): torch.Size([32000, 24, 3])
             IMUPoser_Model.py - training_step() - target_joint.size(): torch.Size([32000, 24, 3])
             '''
+            '''
+            torch.Size([256, 125, 144]) should be (batch_size, sequence_length, 144_SMPL_pose_params)
+            125 should be sequence length. 32000 = 256*125, so make sure to reshape. 
+            is torch.Size([32000, 24, 3]) (batch_size * window_length, 24_joints, global_pose_3D_position)
+            '''
             joint_pos_loss = self.loss(pred_joint, target_joint)
             loss += joint_pos_loss
 
@@ -100,6 +106,40 @@ class IMUPoserModel(pl.LightningModule):
 
         self.log(f"validation_step_loss", loss.item(), batch_size=self.batch_size)
 
+        return {"loss": loss}
+    
+    def test_step(self, batch, batch_idx):
+        print('\nlen(batch): ', len(batch))
+        imu_inputs, target_pose, input_lengths, _ = batch
+        print('\nimu_inputs.size(): ', imu_inputs.size())
+        print('\ntarget_pose.size(): ', target_pose.size())
+        '''
+        imu_inputs.size():  torch.Size([64, 125, 60])
+        target_pose.size():  torch.Size([64, 125, 144])
+        '''
+        print('\ninput_lengths: ', input_lengths)
+
+        _pred = self(imu_inputs, input_lengths)
+
+        pred_pose = _pred[:, :, :self.n_pose_output]
+        _target = target_pose
+        target_pose = _target[:, :, :self.n_pose_output]
+        loss = self.loss(pred_pose, target_pose)
+        if self.config.use_joint_loss:
+            pred_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(pred_pose).view(-1, 216))[1]
+            target_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(target_pose).view(-1, 216))[1] ## If training is slow, get this from the dataloader
+            # print('\npred_joint.size(): ', pred_joint.size())
+            # print('\ntarget_joint.size(): ', target_joint.size())
+            '''
+            pred_joint.size():  torch.Size([8000, 24, 3])
+            target_joint.size():  torch.Size([8000, 24, 3])
+            '''
+            joint_pos_loss = self.loss(pred_joint, target_joint)
+            loss += joint_pos_loss
+
+        self.log(f"validation_step_loss", loss.item(), ', batch_size: ', self.test_batch_size)
+        print(f"validation_step_loss", loss.item(), ', batch_size: ', self.test_batch_size)
+        print('\npred_joint.size(): ', pred_joint.size())
         return {"loss": loss}
 
     def predict_step(self, batch, batch_idx):

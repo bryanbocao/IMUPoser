@@ -18,7 +18,6 @@ def train_val_split(dataset, train_pct):
 
 def get_dataset(config=None, test_only=False):
     model = config.model
-    print('\nimuposer - utils.py - get_dataset() - test_only: ', test_only)
     # load the dataset
     if model == "GlobalModelIMUPoser":
         if not test_only:
@@ -44,12 +43,11 @@ def get_dataset(config=None, test_only=False):
     else:
         return test_dataset
 
-def get_datamodule(config, test_only=False):
+def get_datamodule(config):
     model = config.model
     # load the dataset
     if model in ["GlobalModelIMUPoser", "GlobalModelIMUPoserFineTuneDIP"]:
-        if test_only: return IMUPoserDataModule(config, test_only=test_only)
-        else: return IMUPoserDataModule(config)
+        return IMUPoserDataModule(config)
     else:
         print("Enter a valid model")
 
@@ -65,16 +63,12 @@ def pad_seq(batch):
     return inputs, outputs, input_lens, output_lens
 
 class IMUPoserDataModule(pl.LightningDataModule):
-    def __init__(self, config, test_only=False):
+    def __init__(self, config):
         super().__init__()
         self.config = config
-        self.test_only = test_only
 
     def setup(self, stage=None):
-        if self.test_only:
-            self.test_dataset = get_dataset(self.config, self.test_only)
-        else:
-            self.train_dataset, self.test_dataset, self.val_dataset = get_dataset(self.config, self.test_only)
+        self.train_dataset, self.test_dataset, self.val_dataset = get_dataset(self.config)
         print("Done with setup")
 
     def train_dataloader(self):

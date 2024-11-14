@@ -17,6 +17,7 @@ class GlobalModelDataset(Dataset):
             data_files = [x.name for x in self.config.processed_imu_poser_25fps.iterdir() if "dip" not in x.name]
         else:
             data_files = ["dip_test.pt"]
+        print('\ndata_files: ', data_files)
 
         imu = []
         pose = []
