@@ -1,3 +1,7 @@
+'''
+Usage:
+python3 visualize_body_part_segmentation.py smpl /media/brcao/eData4TB1/Repos/TransPose/models/SMPL_male.pkl
+'''
 import os
 import sys
 import json
