@@ -1,6 +1,6 @@
 '''
 Usage:
-python3 visualize_body_part_segmentation_wip.py smpl /media/brcao/eData4TB1/Repos/TransPose/models/SMPL_male.pkl
+python3 visualize_body_part_segmentation_sel_joint.py smpl /media/brcao/eData4TB1/Repos/TransPose/models/SMPL_male.pkl
 '''
 
 import os
@@ -55,9 +55,10 @@ def main(body_model='smpl', body_model_path='body_models/smpl/'):
     part_segm = json.load(open(part_segm_filepath))
     print('\npart_segm.keys(): ', part_segm.keys())
     '''
-    part_segm.keys():  dict_keys(['rightHand', 'rightUpLeg', 'leftArm', 'leftLeg', 'leftToeBase', 'leftFoot', 'spine1', 'spine2', 
-    'leftShoulder', 'rightShoulder', 'rightFoot', 'head', 'rightArm', 'leftHandIndex1', 'rightLeg', 'rightHandIndex1', 'leftForeArm', 
-    'rightForeArm', 'neck', 'rightToeBase', 'spine', 'leftUpLeg', 'leftHand', 'hips'])
+    part_segm.keys():  dict_keys(['rightHand', 'rightUpLeg', 'leftArm', 'leftLeg', 'leftToeBase', 'leftFoot', \
+        'spine1', 'spine2', 'leftShoulder', 'rightShoulder', 'rightFoot', 'head', 'rightArm', 'leftHandIndex1', \
+        'rightLeg', 'rightHandIndex1', 'leftForeArm', 'rightForeArm', 'neck', 'rightToeBase', 'spine', \
+        'leftUpLeg', 'leftHand', 'hips'])
     '''
 
     vertices = body_model().vertices[0].detach().numpy()
@@ -86,7 +87,7 @@ def main(body_model='smpl', body_model_path='body_models/smpl/'):
     # for i in range(len(vertex_colors)):
     #     vertex_colors[i] = [1, 1, 1, 1]
 
-    vert_i = 3021 # edit
+    vert_i = 626 # edit
     vertex_colors[vert_i] = [1, 0, 0, 1]
     for i in range(len(vertex_colors)):
         if i != vert_i: vertex_colors[i] = [1, 1, 1, 0.5] 
