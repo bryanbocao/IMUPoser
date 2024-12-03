@@ -44,6 +44,7 @@ class Config:
         self.raw_amass_path = self.root_dir / "data/raw/AMASS"
 
         self.processed_imu_poser = self.root_dir / "data/processed_imuposer"
+        self.processed_imu_poser_act = self.root_dir / "data/processed_imuposer_act"
         self.processed_imu_poser_25fps = self.root_dir / "data/processed_imuposer_25fps"
 
         self.vposer_ckpt_path = self.root_dir / "extern/vposer_v2_05"
