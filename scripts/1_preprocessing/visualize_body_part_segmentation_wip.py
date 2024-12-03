@@ -58,6 +58,15 @@ def main(body_model='smpl', body_model_path='body_models/smpl/'):
     part_segm.keys():  dict_keys(['rightHand', 'rightUpLeg', 'leftArm', 'leftLeg', 'leftToeBase', 'leftFoot', 'spine1', 'spine2', 
     'leftShoulder', 'rightShoulder', 'rightFoot', 'head', 'rightArm', 'leftHandIndex1', 'rightLeg', 'rightHandIndex1', 'leftForeArm', 
     'rightForeArm', 'neck', 'rightToeBase', 'spine', 'leftUpLeg', 'leftHand', 'hips'])
+
+    IMUPoser
+    # left wrist, right wrist, left thigh, right thigh, head, pelvis
+    vi_mask = torch.tensor([1961, 5424, 876, 4362, 411, 3021])
+    ji_mask = torch.tensor([18, 19, 1, 2, 15, 0])
+
+    TransPose
+    vi_mask = torch.tensor([1961, 5424, 1176, 4662, 411, 3021])
+    ji_mask = torch.tensor([18, 19, 4, 5, 15, 0])
     '''
 
     vertices = body_model().vertices[0].detach().numpy()
@@ -86,7 +95,7 @@ def main(body_model='smpl', body_model_path='body_models/smpl/'):
     # for i in range(len(vertex_colors)):
     #     vertex_colors[i] = [1, 1, 1, 1]
 
-    vert_i = 3021 # edit
+    vert_i = 4858 # edit
     vertex_colors[vert_i] = [1, 0, 0, 1]
     for i in range(len(vertex_colors)):
         if i != vert_i: vertex_colors[i] = [1, 1, 1, 0.5] 

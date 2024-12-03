@@ -87,13 +87,19 @@ def main(body_model='smpl', body_model_path='body_models/smpl/'):
     # for i in range(len(vertex_colors)):
     #     vertex_colors[i] = [1, 1, 1, 1]
 
-    vert_i = 626 # edit
+    vert_i = 4446 # edit
     vertex_colors[vert_i] = [1, 0, 0, 1]
     for i in range(len(vertex_colors)):
         if i != vert_i: vertex_colors[i] = [1, 1, 1, 0.5] 
     mesh = trimesh.Trimesh(vertices, faces, process=False, vertex_colors=vertex_colors)
     mesh.show(background=(0,0,0,0))
 
+# 1685 - 1627 = 58
+    # 1358 + 58 =
+    #- 870 = 48
+    # 4657 + 48 = 
+    # 6432 - 6369 = 63
+    # 328 + 63 = 
 
 if __name__ == '__main__':
     main(sys.argv[1], sys.argv[2])
