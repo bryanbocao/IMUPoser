@@ -71,6 +71,7 @@ class IMUPoserModel(pl.LightningModule):
             loss = 0
         else:
             loss = self.loss(pred_pose, target_pose)
+
         if self.config.use_joint_loss:
             pred_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(pred_pose).view(-1, 216))[1]
             target_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(target_pose).view(-1, 216))[1] ## If training is slow, get this from the dataloader
@@ -85,22 +86,21 @@ class IMUPoserModel(pl.LightningModule):
                 # print('\npred_joint: ', pred_joint)
                 # print('\ntarget_joint: ', target_joint)
                 joint_pos_loss = self.loss(pred_joint, target_joint)
-                print('\njoint_pos_loss.size(): ', joint_pos_loss.size())
+                # print('\njoint_pos_loss.size(): ', joint_pos_loss.size())
                 # joint_pos_loss.size():  torch.Size([8000, 24])
                 joint_pos_loss = torch.mean(joint_pos_loss)
-                print('\njoint_pos_loss: ', joint_pos_loss)
+                # print('\njoint_pos_loss: ', joint_pos_loss)
                 loss += joint_pos_loss
                 
-                print('\nloss: ', loss)
+                # print('\nloss: ', loss)
             else:
                 joint_pos_loss = self.loss(pred_joint, target_joint)
                 loss += joint_pos_loss
-                print('\njoint_pos_loss: ', joint_pos_loss)
+                # print('\njoint_pos_loss: ', joint_pos_loss)
                 # e.g. joint_pos_loss:  tensor(0.1298, device='cuda:0')
-                print('\nloss: ', loss)
+                # print('\nloss: ', loss)
 
         self.log(f"training_step_loss", loss.item(), batch_size=self.batch_size)
-        # www
         return {"loss": loss}
 
     def validation_step(self, batch, batch_idx):
@@ -115,6 +115,7 @@ class IMUPoserModel(pl.LightningModule):
             loss = 0
         else:
             loss = self.loss(pred_pose, target_pose)
+
         if self.config.use_joint_loss:
             pred_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(pred_pose).view(-1, 216))[1]
             target_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(target_pose).view(-1, 216))[1] ## If training is slow, get this from the dataloader
@@ -129,19 +130,19 @@ class IMUPoserModel(pl.LightningModule):
                 # print('\npred_joint: ', pred_joint)
                 # print('\ntarget_joint: ', target_joint)
                 joint_pos_loss = self.loss(pred_joint, target_joint)
-                print('\njoint_pos_loss.size(): ', joint_pos_loss.size())
+                # print('\njoint_pos_loss.size(): ', joint_pos_loss.size())
                 # joint_pos_loss.size():  torch.Size([8000, 24])
                 joint_pos_loss = torch.mean(joint_pos_loss)
-                print('\njoint_pos_loss: ', joint_pos_loss)
+                # print('\njoint_pos_loss: ', joint_pos_loss)
                 loss += joint_pos_loss
                 
-                print('\nloss: ', loss)
+                # print('\nloss: ', loss)
             else:
                 joint_pos_loss = self.loss(pred_joint, target_joint)
                 loss += joint_pos_loss
-                print('\njoint_pos_loss: ', joint_pos_loss)
+                # print('\njoint_pos_loss: ', joint_pos_loss)
                 # e.g. joint_pos_loss:  tensor(0.1298, device='cuda:0')
-                print('\nloss: ', loss)
+                # print('\nloss: ', loss)
 
         self.log(f"validation_step_loss", loss.item(), batch_size=self.batch_size)
 
@@ -171,6 +172,7 @@ class IMUPoserModel(pl.LightningModule):
             loss = 0
         else:
             loss = self.loss(pred_pose, target_pose)
+            
         if self.config.use_joint_loss:
             pred_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(pred_pose).view(-1, 216))[1]
             target_joint = self.bodymodel.forward_kinematics(pose=r6d_to_rotation_matrix(target_pose).view(-1, 216))[1] ## If training is slow, get this from the dataloader
